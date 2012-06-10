@@ -5,6 +5,7 @@ import (
     	"bytes"
     	"strconv"
     	"strings"
+    	"log"
 )
 
 func sanitize(out []byte) (count int, err error) {
@@ -24,13 +25,15 @@ func countLines() int {
 }
 
 func countCommits() int {
-	gls := exec.Command("git", "shortlog")
-    	grep := exec.Command("grep", "-E", "'^[ ]+\w+'")
+	gls := exec.Command("git", "log", "--pretty=oneline")
     	wc := exec.Command("wc", "-l")
 
-    	out, _, _ := Pipeline(gls, grep, )
+    	out, _, _ := Pipeline(gls, wc)
 
-    	count, _ = sanitize(out)
+    	count, err := sanitize(out)
+    	if err != nil {
+    		log.Fatal(err)
+    	}
 
     	return count
 }

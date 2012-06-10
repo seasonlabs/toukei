@@ -14,5 +14,11 @@ func TestSanitize(t *testing.T) {
 }
 
 func TestCountCommits(t *testing.T) {
-	countCommits()
+	foo := countCommits()
+
+	if foo == 0 {
+		t.Fail()
+	} else {
+		t.Log(foo)
+	}
 }

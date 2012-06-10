@@ -7,9 +7,10 @@ import (
 )
 
 func main() {
-	if err := os.Chdir("../savia"); err != nil {
+	if err := os.Chdir("."); err != nil {
 		log.Fatal(err)
 	}
 
-  	fmt.Printf("%d\n", countLines())
+	fmt.Printf("Lines: %d\n", countLines())
+  	fmt.Printf("Commits: %d\n", countCommits())
 }
