@@ -1,15 +1,14 @@
-package main
+package checker
 
 import (
-	"fmt"
 	"log"
         "os"
-       	"net/http"
        	"encoding/json"
+       	"time"
+       	"../commands"
 )
 
-import "github.com/kylelemons/go-gypsy/yaml"
-import "github.com/simonz05/godis/redis"
+//import "github.com/simonz05/godis"
 
 type Stat struct {
 	Path string
@@ -17,10 +16,16 @@ type Stat struct {
 	Commits int
 }
 
-var path string
 var ch chan Stat
 
-func process(w http.ResponseWriter, r *http.Request) {
+func Check(path string) {
+	for {
+		process(path)
+		time.Sleep(60 * time.Second)
+	}
+}
+
+func process(path string) string {
 	file, err := os.Open(path)
 	if err != nil {
 		log.Fatal(err)
@@ -42,12 +47,12 @@ func process(w http.ResponseWriter, r *http.Request) {
 
 	for i, dir := range dirs {
 		go func(current string, i int) {
-			lines, err := countLines(current)
+			lines, err := commands.CountLines(current)
 			if err != nil {
 				log.Fatal(err)
 			}
 
-			commits, err := countCommits(current) 
+			commits, err := commands.CountCommits(current) 
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -63,25 +68,10 @@ func process(w http.ResponseWriter, r *http.Request) {
 		stats = append(stats, stat)
 	}
 
-	b, err := json.Marshal(stats)
+	statsJson, err := json.Marshal(stats)
 	if err != nil {
 	    log.Fatal(err)
 	}
 	
-	fmt.Fprintf(w, string(b))
-}
-
-func main() {
-	config, err := yaml.ReadFile("config.yml")
-	if err != nil {
-		log.Fatalf("readfile(%q): %s", "config.yml", err)
-	}
-
-	path, err = config.Get("path")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	http.HandleFunc("/", process)
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	return string(statsJson)
 }

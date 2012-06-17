@@ -1,7 +1,7 @@
-package main
+package commands
 
 import (
-	"os/exec"
+	   "os/exec"
     	"bytes"
     	"strconv"
     	"strings"
@@ -15,7 +15,7 @@ func sanitize(out []byte) (count int) {
 	return
 }
 
-func countLines(path string) (int, error) {
+func CountLines(path string) (int, error) {
 	gls := exec.Command("git", "ls-files")
         gls.Dir = path
     	cat := exec.Command("xargs", "cat")
@@ -30,7 +30,7 @@ func countLines(path string) (int, error) {
     	return count, nil
 }
 
-func countCommits(path string) (int, error) {
+func CountCommits(path string) (int, error) {
 	gls := exec.Command("git", "log", "--pretty=oneline")
         gls.Dir = path
     	wc := exec.Command("wc", "-l")
