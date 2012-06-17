@@ -5,37 +5,42 @@ import (
     	"bytes"
     	"strconv"
     	"strings"
-    	"log"
 )
 
-func sanitize(out []byte) (count int, err error) {
-	return strconv.Atoi(strings.TrimSpace(string(out)))
+func sanitize(out []byte) (count int) {
+        count, err := strconv.Atoi(strings.TrimSpace(string(out)))
+        if err != nil {
+                count = 0
+        }
+	return
 }
 
-func countLines() int {
+func countLines(path string) (int, error) {
 	gls := exec.Command("git", "ls-files")
+        gls.Dir = path
     	cat := exec.Command("xargs", "cat")
+        cat.Dir = path
     	wc := exec.Command("wc", "-l")
+        wc.Dir = path
 
     	out, _, _ := Pipeline(gls, cat, wc)
 
-    	count, _ := sanitize(out)
-
-    	return count
+    	count := sanitize(out)
+        
+    	return count, nil
 }
 
-func countCommits() int {
+func countCommits(path string) (int, error) {
 	gls := exec.Command("git", "log", "--pretty=oneline")
+        gls.Dir = path
     	wc := exec.Command("wc", "-l")
+        wc.Dir = path
 
     	out, _, _ := Pipeline(gls, wc)
 
-    	count, err := sanitize(out)
-    	if err != nil {
-    		log.Fatal(err)
-    	}
-
-    	return count
+    	count := sanitize(out)
+    	
+    	return count, nil
 }
 
 // To provide input to the pipeline, assign an io.Reader to the first's Stdin.
