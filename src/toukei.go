@@ -57,7 +57,7 @@ func listen() {
 
 func MainServer(w http.ResponseWriter, req *http.Request) {
 	t := template.Must(template.New("foo").ParseGlob("index.html"))
-	if err := t.ExecuteTemplate(w, "index", "http://localhost"); err != nil {
+	if err := t.ExecuteTemplate(w, "index", "localhost:8080"); err != nil {
 		log.Fatal(err)
 	}
 }
