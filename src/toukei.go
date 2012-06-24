@@ -14,7 +14,7 @@ import "github.com/kylelemons/go-gypsy/yaml"
 import "github.com/simonz05/godis"
 import "code.google.com/p/go.net/websocket"
 
-var port *int = flag.Int("p", 23456, "Port to listen.")
+var port *int = flag.Int("p", 8080, "Port to listen.")
 
 //func hello(w http.ResponseWriter, r *http.Request) {
 //	fmt.Fprintf(w, "Hello")
