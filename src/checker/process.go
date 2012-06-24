@@ -22,7 +22,7 @@ var ch chan Stat
 func Check(path string) {
 	for {
 		publish(process(path))
-		time.Sleep(60 * time.Second)
+		time.Sleep(20 * time.Second)
 	}
 }
 
@@ -48,15 +48,8 @@ func process(path string) Stat {
 
 	for i, dir := range dirs {
 		go func(current string, i int) {
-			lines, err := commands.CountLines(current)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			commits, err := commands.CountCommits(current) 
-			if err != nil {
-				log.Fatal(err)
-			}
+			lines, _ := commands.CountLines(current)
+			commits, _ := commands.CountCommits(current) 
 
 	  		stat := Stat{Path: current, Lines: lines, Commits: commits}
 	  		ch <- stat

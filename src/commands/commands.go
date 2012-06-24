@@ -1,10 +1,11 @@
 package commands
 
 import (
-	   "os/exec"
-    	"bytes"
+	"os/exec"
     	"strconv"
     	"strings"
+        "regexp"
+        "errors"
 )
 
 func sanitize(out []byte) (count int) {
@@ -16,72 +17,52 @@ func sanitize(out []byte) (count int) {
 }
 
 func CountLines(path string) (int, error) {
-        gls := exec.Command("git", "ls-files")
+        gls := exec.Command("git", "log", "--shortstat", "--pretty=oneline")
         gls.Dir = path
-    	cat := exec.Command("xargs", "cat")
-        cat.Dir = path
-    	wc := exec.Command("wc", "-l")
-        wc.Dir = path
 
-    	out, _, _ := Pipeline(gls, cat, wc)
+    	out, _ := gls.Output()
 
-    	count := sanitize(out)
+    	if (string(out) == "") {
+    		return 0, errors.New("Not a git repository")
+    	}
+
+        ss := strings.Split(string(out), "\n")
+
+        totalFiles := 0
+        totalInsertions := 0
+        totalDeletions := 0
+        totalLines := 0
+        for _, line := range ss {
+        	if line == "" || line[0] !=  ' ' {
+        		continue
+        	} else {
+        		re := regexp.MustCompile(" (\\d+) files changed, (\\d+) insertions\\(\\+\\), (\\d+) deletions\\(-\\)")
+        		data := re.FindStringSubmatch(line)
+        		//fmt.Println("k")
+        		
+        		files, insertions, deletions := sanitize([]byte(data[1])), sanitize([]byte(data[2])), sanitize([]byte(data[3]))
+        		
+        		totalFiles += files
+        		totalInsertions += insertions
+        		totalDeletions += deletions
+
+        		totalLines = totalInsertions - totalDeletions
+        	}
+        }
         
-    	return count, nil
+    	return totalLines, nil
 }
 
 func CountCommits(path string) (int, error) {
         gls := exec.Command("git", "log", "--pretty=oneline")
         gls.Dir = path
-    	wc := exec.Command("wc", "-l")
-        wc.Dir = path
-
-    	out, _, _ := Pipeline(gls, wc)
-
-    	count := sanitize(out)
     	
-    	return count, nil
-}
+        out, _ := gls.Output()
+        if (string(out) == "") {
+    		return 0, errors.New("Not a git repository")
+    	}
+	
+	ss := strings.Split(string(out), "\n")
 
-// To provide input to the pipeline, assign an io.Reader to the first's Stdin.
-func Pipeline(cmds ...*exec.Cmd) (pipeLineOutput, collectedStandardError []byte, pipeLineError error) {
-        // Require at least one command
-        if len(cmds) < 1 { 
-                return nil, nil, nil
-        }
-
-        // Collect the output from the command(s)
-        var output bytes.Buffer
-        var stderr bytes.Buffer
-
-        last := len(cmds) - 1
-        for i, cmd := range cmds[:last] {
-                var err error
-                // Connect each command's stdin to the previous command's stdout
-                if cmds[i+1].Stdin, err = cmd.StdoutPipe(); err != nil {
-                        return nil, nil, err
-                }
-                // Connect each command's stderr to a buffer
-                cmd.Stderr = &stderr
-        }
-
-        // Connect the output and error for the last command
-        cmds[last].Stdout, cmds[last].Stderr = &output, &stderr
-
-        // Start each command
-        for _, cmd := range cmds {
-                if err := cmd.Start(); err != nil {
-                        return output.Bytes(), stderr.Bytes(), err
-                }
-        }
-
-        // Wait for each command to complete
-        for _, cmd := range cmds {
-                if err := cmd.Wait(); err != nil {
-                        return output.Bytes(), stderr.Bytes(), err
-                }
-        }
-
-        // Return the pipeline output and the collected standard error
-        return output.Bytes(), stderr.Bytes(), nil
+	return len(ss), nil
 }
