@@ -37,7 +37,6 @@ func main() {
 	http.Handle("/json", websocket.Handler(jsonServer))
 	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("./assets"))))
 	http.HandleFunc("/", MainServer)
-	fmt.Printf("http://localhost:%d/\n", *port)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *port), nil))
 }
 
@@ -57,7 +56,7 @@ func listen() {
 
 func MainServer(w http.ResponseWriter, req *http.Request) {
 	t := template.Must(template.New("foo").ParseGlob("index.html"))
-	if err := t.ExecuteTemplate(w, "index", "localhost:8080"); err != nil {
+	if err := t.ExecuteTemplate(w, "index", req.Host + ":" + req.URL.Scheme); err != nil {
 		log.Fatal(err)
 	}
 }
