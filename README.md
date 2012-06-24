@@ -1,0 +1,1 @@
+Toukei is a highly concurrent, multithreaded, realtime, git repository statistics server written in Go (golang)
