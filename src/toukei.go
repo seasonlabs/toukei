@@ -62,7 +62,7 @@ func MainServer(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
-// jsonServer echoes back json string sent from client using websocket.JSON.
+// jsonServer handles listening to reddis messages and push the result to connected clients 
 func jsonServer(ws *websocket.Conn) {
 	c := godis.New("", 0, "")
 
