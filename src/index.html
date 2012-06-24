@@ -1,0 +1,46 @@
+{{define "index"}}
+<html>
+  <head>
+    <script type="text/javascript">
+    var path;
+    var ws;
+    function init() {
+       console.log("init");
+       if (ws != null) {
+         ws.close();
+         ws = null;
+       }
+       path = "/json";
+       console.log("path:" + path);
+       var div = document.getElementById("msg");
+       div.innerText = "path:" + path + "\n" + div.innerText;
+       ws = new WebSocket("ws://localhost:23456" + path);
+
+       ws.onopen = function () {
+          div.innerText = "opened\n" + div.innerText;
+       };
+       ws.onmessage = function (e) {
+          div.innerText = "msg:" + e.data + "\n" + div.innerText;
+          if (e.data instanceof ArrayBuffer) {
+            s = "ArrayBuffer: " + e.data.byteLength + "[";
+            var view = new Uint8Array(e.data);
+            for (var i = 0; i < view.length; ++i) {
+              s += " " + view[i];
+            }
+            s += "]";
+            div.innerText = s + "\n" + div.innerText;
+          }
+       };
+       ws.onclose = function (e) {
+          div.innerText = "closed\n" + div.innerText;
+       };
+       console.log("init");
+       div.innerText = "init\n" + div.innerText;
+    };
+    </script>
+  </head>
+  <body onLoad="init();">
+    <div id="msg"></div>
+  </body>
+</html>
+{{end}}

@@ -8,24 +8,25 @@ import (
        	"../commands"
 )
 
-//import "github.com/simonz05/godis"
+import "github.com/simonz05/godis"
 
 type Stat struct {
 	Path string
 	Lines int
 	Commits int
+	Repos int
 }
 
 var ch chan Stat
 
 func Check(path string) {
 	for {
-		process(path)
+		publish(process(path))
 		time.Sleep(60 * time.Second)
 	}
 }
 
-func process(path string) string {
+func process(path string) Stat {
 	file, err := os.Open(path)
 	if err != nil {
 		log.Fatal(err)
@@ -62,16 +63,25 @@ func process(path string) string {
 	  	}(path + string(os.PathSeparator) + dir.Name(), i)
 	}
 
-	var stats []Stat
+	stats := Stat{Path: "Total", Lines: 0, Commits: 0, Repos: len(dirs)}
 	for i := 0; i < len(dirs); i++ {
 		stat := <-ch
-		stats = append(stats, stat)
+		stats.Lines += stat.Lines
+		stats.Commits += stat.Commits
 	}
+
+	return stats
+}
+
+func publish(stats Stat) {
+	c := godis.New("", 0, "")
 
 	statsJson, err := json.Marshal(stats)
 	if err != nil {
 	    log.Fatal(err)
 	}
-	
-	return string(statsJson)
+
+	if _, err := c.Publish("toukei", statsJson); err != nil {
+		log.Fatal(err)
+	}
 }

@@ -16,7 +16,7 @@ func sanitize(out []byte) (count int) {
 }
 
 func CountLines(path string) (int, error) {
-	gls := exec.Command("git", "ls-files")
+        gls := exec.Command("git", "ls-files")
         gls.Dir = path
     	cat := exec.Command("xargs", "cat")
         cat.Dir = path
@@ -31,7 +31,7 @@ func CountLines(path string) (int, error) {
 }
 
 func CountCommits(path string) (int, error) {
-	gls := exec.Command("git", "log", "--pretty=oneline")
+        gls := exec.Command("git", "log", "--pretty=oneline")
         gls.Dir = path
     	wc := exec.Command("wc", "-l")
         wc.Dir = path
