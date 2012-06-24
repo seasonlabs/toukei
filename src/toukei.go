@@ -21,6 +21,7 @@ var port *int = flag.Int("p", 8080, "Port to listen.")
 //}
 
 func main() {
+	flag.Parse()
 	config, err := yaml.ReadFile("config.yml")
 	if err != nil {
 		log.Fatalf("readfile(%q): %s", "config.yml", err)
