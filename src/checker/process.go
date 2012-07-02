@@ -4,7 +4,6 @@ import (
 	"log"
         "os"
        	"encoding/json"
-       	"time"
        	"../commands"
 )
 
@@ -18,13 +17,6 @@ type Stat struct {
 }
 
 var ch chan Stat
-
-func Check(path string) {
-	for {
-		publish(process(path))
-		time.Sleep(20 * time.Second)
-	}
-}
 
 func process(path string) Stat {
 	file, err := os.Open(path)
