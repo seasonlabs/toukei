@@ -68,7 +68,8 @@ func jsonServer(ws *websocket.Conn) {
 
 	elem, err := c.Get("toukei")
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+ 		elem = []byte("{}")
 	}
 	println(string(elem))
 	websocketSend(ws, elem)

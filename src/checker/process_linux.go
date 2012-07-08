@@ -4,9 +4,12 @@ import (
 	"time"
 	"../inotify"
 	"log"
+	"os"
 )
 
 func Check(path string) {
+	publish(process(path))
+
 	watcher, err := inotify.NewWatcher()
 	if err != nil {
 		log.Fatal(err)
@@ -26,18 +29,18 @@ func Check(path string) {
 
 	for _, fi := range fis {
 		if fi.IsDir() {
-			err = watcher.Watch(path + "/" + fi.Name() + "/refs/heads/master")
+			err = watcher.Watch(path + "/" + fi.Name() + "/refs/heads")
 			if err != nil {
 				log.Fatal(err)
 			}
 		}
 	}
 	
-	
 	for {
 		select {
 		case ev := <-watcher.Event:
 	    		log.Println("event:", ev)
+	    		publish(process(path))
 		case err := <-watcher.Error:
 	    		log.Println("error:", err)
 		}
