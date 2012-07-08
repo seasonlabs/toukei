@@ -38,8 +38,10 @@ func Check(path string) {
 	for {
 		select {
 		case ev := <-watcher.Event:
-	    		log.Println("event:", ev)
-	    		publish(process(path))
+	    		if(ev.Mask == inotify.IN_MODIFY) {
+	    			log.Println("event:", ev)
+ 				publish(process(path))
+ 			}
 		case err := <-watcher.Error:
 	    		log.Println("error:", err)
 		}
