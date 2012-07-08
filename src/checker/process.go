@@ -11,7 +11,7 @@ import "github.com/simonz05/godis"
 
 type Stat struct {
 	Path string
-	Lines int
+	Files int
 	Commits int
 	Repos int
 }
@@ -40,18 +40,18 @@ func process(path string) Stat {
 
 	for i, dir := range dirs {
 		go func(current string, i int) {
-			lines, _ := commands.CountLines(current)
+			files, _ := commands.CountFiles(current)
 			commits, _ := commands.CountCommits(current) 
 
-	  		stat := Stat{Path: current, Lines: lines, Commits: commits}
+	  		stat := Stat{Path: current, Files: files, Commits: commits}
 	  		ch <- stat
 	  	}(path + string(os.PathSeparator) + dir.Name(), i)
 	}
 
-	stats := Stat{Path: "Total", Lines: 0, Commits: 0, Repos: len(dirs)}
+	stats := Stat{Path: "Total", Files: 0, Commits: 0, Repos: len(dirs)}
 	for i := 0; i < len(dirs); i++ {
 		stat := <-ch
-		stats.Lines += stat.Lines
+		stats.Files += stat.Files
 		stats.Commits += stat.Commits
 	}
 
@@ -64,6 +64,10 @@ func publish(stats Stat) {
 	statsJson, err := json.Marshal(stats)
 	if err != nil {
 	    log.Fatal(err)
+	}
+
+	if err := c.Set("toukei", statsJson); err != nil {
+		log.Fatal(err)
 	}
 
 	if _, err := c.Publish("toukei", statsJson); err != nil {

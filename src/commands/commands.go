@@ -4,7 +4,6 @@ import (
 	"os/exec"
     	"strconv"
     	"strings"
-        "regexp"
         "errors"
 )
 
@@ -16,8 +15,8 @@ func sanitize(out []byte) (count int) {
 	return
 }
 
-func CountLines(path string) (int, error) {
-        gls := exec.Command("git", "log", "--shortstat", "--pretty=oneline")
+func CountFiles(path string) (int, error) {
+        gls := exec.Command("git", "ls-files")
         gls.Dir = path
 
     	out, _ := gls.Output()
@@ -27,30 +26,8 @@ func CountLines(path string) (int, error) {
     	}
 
         ss := strings.Split(string(out), "\n")
-
-        totalFiles := 0
-        totalInsertions := 0
-        totalDeletions := 0
-        totalLines := 0
-        for _, line := range ss {
-        	if line == "" || line[0] !=  ' ' {
-        		continue
-        	} else {
-        		re := regexp.MustCompile(" (\\d+) files changed, (\\d+) insertions\\(\\+\\), (\\d+) deletions\\(-\\)")
-        		data := re.FindStringSubmatch(line)
-        		//fmt.Println("k")
-        		
-        		files, insertions, deletions := sanitize([]byte(data[1])), sanitize([]byte(data[2])), sanitize([]byte(data[3]))
-        		
-        		totalFiles += files
-        		totalInsertions += insertions
-        		totalDeletions += deletions
-
-        		totalLines = totalInsertions - totalDeletions
-        	}
-        }
         
-    	return totalLines, nil
+    	return len(ss), nil
 }
 
 func CountCommits(path string) (int, error) {

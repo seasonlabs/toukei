@@ -66,6 +66,13 @@ func MainServer(w http.ResponseWriter, req *http.Request) {
 func jsonServer(ws *websocket.Conn) {
 	c := godis.New("", 0, "")
 
+	elem, err := c.Get("toukei")
+	if err != nil {
+		log.Fatal(err)
+	}
+	println(string(elem))
+	websocketSend(ws, elem)
+
 	s, err := c.Subscribe("toukei")
 	if err != nil {
 		log.Fatal(err)
@@ -73,18 +80,20 @@ func jsonServer(ws *websocket.Conn) {
 
 	for {
 		m := <-s.Messages
-		println(m.Elem.String())
-
-		var stat checker.Stat
-		
-		if err := json.Unmarshal(m.Elem, &stat); err != nil {
-			log.Fatal(err)
-		}
-
-		// Send send a text message serialized T as JSON.
-		if err := websocket.JSON.Send(ws, stat); err != nil {
-			log.Fatal(err)
-		}
-		fmt.Printf("send:%#v\n", stat)
+		websocketSend(ws, m.Elem)
 	}
+}
+
+func websocketSend(ws *websocket.Conn, elem []byte) {
+	var stat checker.Stat
+
+	if err := json.Unmarshal(elem, &stat); err != nil {
+		log.Fatal(err)
+	}
+
+	// Send send a text message serialized T as JSON.
+	if err := websocket.JSON.Send(ws, stat); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("send: %#v\n", stat)
 }
