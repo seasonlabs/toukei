@@ -1,7 +1,6 @@
 package checker
 
 import (
-	"time"
 	"../inotify"
 	"log"
 	"os"
