@@ -2,9 +2,9 @@
 
 ## Requirements:
 
-	* Git
-	* Redis
-	* Go >= 1.0.0
+* Git
+* Redis
+* Go >= 1.0.0
 
 ## Installation
 
