@@ -22,3 +22,7 @@ Copy bin directory to a server with git repositories. Use a upstart/init.d scrip
 
 Write the path to a git repositories dir in bind/config.yml
 
+## Demo
+
+http://toukei.season.es:12345/
+
