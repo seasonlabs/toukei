@@ -4,7 +4,7 @@ import (
 	"log"
         "os"
        	"encoding/json"
-       	"../commands"
+       	"toukei/commands"
 )
 
 import "github.com/simonz05/godis"

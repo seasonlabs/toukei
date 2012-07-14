@@ -1,13 +1,13 @@
 package main
 
 import (
+	"encoding/json"
+	"flag"
 	"fmt"
+	"html/template"
 	"log"
-       	"net/http"
-       	"flag"
-       	"./checker"
-       	"encoding/json"
-       	"html/template"
+	"net/http"
+	"toukei/checker"
 )
 
 import "github.com/kylelemons/go-gypsy/yaml"
@@ -57,7 +57,7 @@ func listen() {
 
 func MainServer(w http.ResponseWriter, req *http.Request) {
 	t := template.Must(template.New("foo").ParseGlob("index.html"))
-	if err := t.ExecuteTemplate(w, "index", req.Host + ":" + req.URL.Scheme); err != nil {
+	if err := t.ExecuteTemplate(w, "index", req.Host+":"+req.URL.Scheme); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -69,7 +69,7 @@ func jsonServer(ws *websocket.Conn) {
 	elem, err := c.Get("toukei")
 	if err != nil {
 		log.Println(err)
- 		elem = []byte("{}")
+		elem = []byte("{}")
 	}
 	println(string(elem))
 	websocketSend(ws, elem)
