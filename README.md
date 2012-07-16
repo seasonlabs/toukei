@@ -10,7 +10,7 @@ Use toukei to offer an insight of your work or have a bird's eye over your compa
 
 ## Installation
 
-go get github.com/seasonlabs/toukei
+	go get github.com/seasonlabs/toukei
 
 ## Deploy
 
