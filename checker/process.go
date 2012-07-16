@@ -4,7 +4,7 @@ import (
 	"log"
         "os"
        	"encoding/json"
-       	"toukei/commands"
+       	"github.com/seasonlabs/toukei/commands"
 )
 
 import "github.com/simonz05/godis"
