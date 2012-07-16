@@ -1,7 +1,7 @@
 package checker
 
 import (
-	"../inotify"
+	"github.com/seasonlabs/toukei/inotify"
 	"log"
 	"os"
 )
