@@ -10,19 +10,15 @@ Use toukei to offer an insight of your work or have a bird's eye over your compa
 
 ## Installation
 
-Clone the repository
+go get github.com/seasonlabs/toukei
 
-Build with: 
-	
-	./all.sh
+## Deploy
 
-## Deploy 
-
-Copy bin directory to a server with git repositories. Use a upstart/init.d script to start the service
+Use a upstart/init.d script to start $GOPATH/bin/toukei
 
 ## Configure
 
-Write the path to a git repositories dir in bind/config.yml
+Write the path to a git repositories dir in $GOPATH/src/github.com/seasonlabs/toukei/config.yml
 
 ## Demo
 
