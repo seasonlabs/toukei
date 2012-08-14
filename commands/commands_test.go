@@ -24,7 +24,7 @@ func TestCountCommits(t *testing.T) {
 }
 
 func TestCountLinesGitDir(t *testing.T) {
-	foo, err := CountLines(".")
+	foo, err := CountFiles(".")
 
 	if err != nil {
 		t.Fail()
@@ -38,7 +38,7 @@ func TestCountLinesGitDir(t *testing.T) {
 }
 
 func TestCountLinesNoGitDir(t *testing.T) {
-	foo, _ := CountLines("/tmp")
+	foo, _ := CountFiles("/tmp")
 
 	if foo != 0 {
 		t.Fail()
